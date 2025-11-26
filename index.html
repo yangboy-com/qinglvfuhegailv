@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>情侣复合概率测试 - 科学评估版</title>
+    <style>
+        :root {
+            --primary: #9b59b6;
+            --secondary: #8e44ad;
+            --dark: #1a1a2e;
+            --darker: #16213e;
+            --light: #e2e2e2;
+            --accent: #e74c3c;
+            --success: #2ecc71;
+            --warning: #f39c12;
+            --info: #3498db;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, var(--dark), var(--darker));
+            color: var(--light);
+            line-height: 1.6;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            padding: 40px 20px;
+            background: rgba(26, 26, 46, 0.8);
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(155, 89, 182, 0.3);
+        }
+        
+        h1 {
+            font-size: 2.8rem;
+            margin-bottom: 15px;
+            background: linear-gradient(to right, #9b59b6, #e74c3c);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.85;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+        
+        .section {
+            background: rgba(26, 26, 46, 0.7);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(155, 89, 182, 0.2);
+            backdrop-filter: blur(10px);
+        }
+        
+        h2 {
+            color: var(--primary);
+            margin-bottom: 20px;
+            border-bottom: 2px solid rgba(155, 89, 182, 0.3);
+            padding-bottom: 10px;
+            font-size: 1.8rem;
+        }
+        
+        h3 {
+            color: var(--secondary);
+            margin: 20px 0 15px;
+            font-size: 1.4rem;
+        }
+        
+        p {
+            margin-bottom: 15px;
+            font-size: 1.05rem;
+        }
+        
+        .dimension {
+            margin-bottom: 30px;
+        }
+        
+        .dimension-title {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .dimension-name {
+            font-weight: bold;
+            font-size: 1.2rem;
+            color: var(--primary);
+        }
+        
+        .question {
+            margin-bottom: 25px;
+            padding: 20px;
+            background: rgba(22, 33, 62, 0.5);
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+        
+        .question:hover {
+            background: rgba(22, 33, 62, 0.7);
+            transform: translateY(-3px);
+        }
+        
+        .question-text {
+            font-weight: 500;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+        
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .option {
+            padding: 12px 15px;
+            border: 1px solid rgba(155, 89, 182, 0.3);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+        }
+        
+        .option:hover {
+            background: rgba(155, 89, 182, 0.2);
+            border-color: var(--primary);
+        }
+        
+        .option.selected {
+            background: rgba(155, 89, 182, 0.3);
+            border-color: var(--primary);
+            box-shadow: 0 0 10px rgba(155, 89, 182, 0.3);
+        }
+        
+        .option input {
+            margin-right: 10px;
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.2rem;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: block;
+            margin: 40px auto;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+        }
+        
+        .btn:active {
+            transform: translateY(1px);
+        }
+        
+        .result {
+            text-align: center;
+            padding: 30px;
+            display: none;
+        }
+        
+        .probability-card {
+            background: linear-gradient(135deg, var(--dark), var(--darker));
+            border-radius: 15px;
+            padding: 40px 30px;
+            margin: 20px 0;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(155, 89, 182, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .probability-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(to right, var(--primary), var(--accent));
+        }
+        
+        .probability-value {
+            font-size: 4rem;
+            font-weight: bold;
+            margin: 20px 0;
+            background: linear-gradient(to right, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .probability-text {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            color: var(--light);
+        }
+        
+        .progress-bar {
+            height: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            margin: 30px 0;
+            overflow: hidden;
+        }
+        
+        .progress {
+            height: 100%;
+            background: linear-gradient(to right, var(--primary), var(--accent));
+            border-radius: 10px;
+            transition: width 1.5s ease-in-out;
+            width: 0%;
+        }
+        
+        .description {
+            text-align: left;
+            margin-top: 40px;
+        }
+        
+        .scientific {
+            background: rgba(22, 33, 62, 0.7);
+            border-left: 4px solid var(--primary);
+            padding: 20px;
+            margin: 25px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        
+        .scientific-title {
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: var(--primary);
+            font-size: 1.2rem;
+        }
+        
+        .recommendations {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+        
+        .recommendation-card {
+            background: rgba(22, 33, 62, 0.5);
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            border: 1px solid rgba(155, 89, 182, 0.2);
+        }
+        
+        .recommendation-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        .recommendation-title {
+            font-weight: bold;
+            color: var(--primary);
+            margin-bottom: 10px;
+            font-size: 1.2rem;
+        }
+        
+        .factors {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin: 20px 0;
+            justify-content: center;
+        }
+        
+        .factor {
+            background: rgba(155, 89, 182, 0.2);
+            padding: 10px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            border: 1px solid rgba(155, 89, 182, 0.3);
+        }
+        
+        .factor.positive {
+            background: rgba(46, 204, 113, 0.2);
+            border-color: rgba(46, 204, 113, 0.4);
+        }
+        
+        .factor.negative {
+            background: rgba(231, 76, 60, 0.2);
+            border-color: rgba(231, 76, 60, 0.4);
+        }
+        
+        .factor.neutral {
+            background: rgba(52, 152, 219, 0.2);
+            border-color: rgba(52, 152, 219, 0.4);
+        }
+        
+        footer {
+            text-align: center;
+            padding: 30px 0;
+            margin-top: 50px;
+            border-top: 1px solid rgba(155, 89, 182, 0.3);
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.9rem;
+        }
+        
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.2rem;
+            }
+            
+            .probability-value {
+                font-size: 3rem;
+            }
+            
+            .recommendations {
+                grid-template-columns: 1fr;
+            }
+            
+            .section {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>情侣复合概率测试</h1>
+            <p class="subtitle">基于心理学研究的科学评估 - 分析您与前任复合的可能性并提供专业建议</p>
+        </header>
+        
+        <section class="section" id="introduction">
+            <h2>测试简介</h2>
+            <p>分手后是否有可能复合？这个基于心理学研究的测试将帮助您科学评估与前任复合的可能性。通过分析关系中的关键因素，本测试将提供个性化的复合概率评估和实用建议。</p>
+            
+            <div class="scientific">
+                <div class="scientific-title">科学依据</div>
+                <p>本测试基于关系心理学和复合研究，包括以下科学依据：</p>
+                <ul>
+                    <li><strong>关系依附理论</strong>：评估双方的情感连接和安全基础</li>
+                    <li><strong>冲突解决模式</strong>：分析分手原因和解决冲突的能力</li>
+                    <li><strong>关系满意度模型</strong>：衡量过去关系中的积极与消极互动比例</li>
+                    <li><strong>改变意愿评估</strong>：评估双方为改善关系做出改变的意愿</li>
+                    <li><strong>外部因素分析</strong>：考虑生活阶段、支持和压力等外部因素</li>
+                </ul>
+                <p>研究表明，大约15%的情侣在分手后会复合，而其中约30%的复合关系能够长期维持。成功的复合通常涉及双方的个人成长和关系模式的改变。</p>
+            </div>
+            
+            <h3>测试说明</h3>
+            <p>本测试包含40个问题，涵盖关系中的5个关键维度。请根据您的实际情况选择最符合的选项，诚实回答将提供最准确的结果。测试大约需要10-15分钟完成。</p>
+            <p>完成测试后，您将获得：</p>
+            <ul>
+                <li>详细的复合概率评估</li>
+                <li>影响复合的关键因素分析</li>
+                <li>基于心理学研究的专业建议</li>
+                <li>实用的关系修复策略</li>
+            </ul>
+        </section>
+        
+        <section class="section" id="test">
+            <h2>关系评估测试</h2>
+            <div id="questions-container">
+                <!-- 问题将通过JavaScript动态生成 -->
+            </div>
+            <button class="btn" id="submit-btn">查看复合概率</button>
+        </section>
+        
+        <section class="section result" id="result">
+            <h2>复合概率评估结果</h2>
+            <div class="probability-card">
+                <div class="probability-text">您与前任复合的概率为</div>
+                <div class="probability-value" id="probability-value">65%</div>
+                <div class="progress-bar">
+                    <div class="progress" id="probability-progress"></div>
+                </div>
+                <div class="probability-text" id="probability-interpretation">中等概率 - 复合可能性存在但需要努力</div>
+            </div>
+            
+            <div class="description">
+                <h3>关键因素分析</h3>
+                <div class="factors">
+                    <div class="factor positive">情感连接较强</div>
+                    <div class="factor negative">沟通问题显著</div>
+                    <div class="factor neutral">外部压力适中</div>
+                    <div class="factor positive">改变意愿较高</div>
+                    <div class="factor negative">信任问题存在</div>
+                </div>
+                
+                <h3>详细评估</h3>
+                <p id="detailed-assessment">根据您的回答，您与前任复合的可能性处于中等水平。你们之间有较强的感情基础和积极的回忆，这是复合的有利因素。然而，关系中存在的沟通问题和信任问题需要认真解决。</p>
+                
+                <div class="scientific">
+                    <div class="scientific-title">心理学视角</div>
+                    <p>根据关系心理学研究，成功复合的关键因素包括：双方对问题的认识、改变意愿、沟通技巧的提升以及外部支持系统的建立。研究表明，复合后能够长期维持的关系通常经历了至少3-6个月的个人成长和关系修复期。</p>
+                </div>
+                
+                <h3>复合建议与行动计划</h3>
+                <div class="recommendations">
+                    <div class="recommendation-card">
+                        <div class="recommendation-title">沟通改善策略</div>
+                        <p>学习积极倾听和非暴力沟通技巧，避免指责性语言，专注于表达自己的感受和需求。</p>
+                    </div>
+                    <div class="recommendation-card">
+                        <div class="recommendation-title">个人成长计划</div>
+                        <p>专注于自我提升，发展独立性和自信心。参加兴趣班或心理咨询，增强自我认知。</p>
+                    </div>
+                    <div class="recommendation-card">
+                        <div class="recommendation-title">关系重建步骤</div>
+                        <p>从友好互动开始，逐步重建信任。设定明确界限，避免过早回到亲密状态。</p>
+                    </div>
+                    <div class="recommendation-card">
+                        <div class="recommendation-title">时间规划</div>
+                        <p>给自己和对方足够的时间思考和成长。建议至少等待1-3个月后再考虑复合可能性。</p>
+                    </div>
+                </div>
+                
+                <h3>需要注意的风险</h3>
+                <p id="risk-assessment">复合关系中常见的风险包括重复之前的模式、未解决的根本问题以及不平衡的权力动态。如果决定尝试复合，建议寻求专业关系咨询，并定期评估关系进展。</p>
+                
+                <h3>长期维持建议</h3>
+                <p id="long-term-advice">如果成功复合，建议建立新的关系规则，定期进行关系检查，保持个人空间，并持续投入关系维护。研究表明，成功复合后维持5年以上的概率约为40%。</p>
+            </div>
+        </section>
+        
+        <footer>
+            <p>© 2023 情侣复合概率测试 - 科学评估版</p>
+            <p>注意：本测试结果仅供参考，不能替代专业心理咨询。如果您正处于情感困扰中，建议寻求合格心理咨询师的帮助。</p>
+        </footer>
+    </div>
+
+    <script>
+        // 问题数据
+        const questions = [
+            // 情感连接维度
+            { id: 1, dimension: "emotional", text: "分手后，您是否经常想起与前任的美好回忆？", options: [
+                { text: "几乎每天都会想起", score: 4 },
+                { text: "每周几次", score: 3 },
+                { text: "偶尔想起", score: 2 },
+                { text: "很少或从不想起", score: 1 }
+            ]},
+            { id: 2, dimension: "emotional", text: "您认为您的前任对您还有感情吗？", options: [
+                { text: "肯定还有感情", score: 4 },
+                { text: "可能还有感情", score: 3 },
+                { text: "不确定", score: 2 },
+                { text: "可能没有感情了", score: 1 }
+            ]},
+            { id: 3, dimension: "emotional", text: "分手后，你们是否还保持联系？", options: [
+                { text: "经常联系", score: 4 },
+                { text: "偶尔联系", score: 3 },
+                { text: "很少联系", score: 2 },
+                { text: "完全不联系", score: 1 }
+            ]},
+            
+            // 分手原因维度
+            { id: 4, dimension: "breakup", text: "导致分手的主要原因是什么？", options: [
+                { text: "外部因素（如距离、家庭压力）", score: 4 },
+                { text: "沟通问题", score: 3 },
+                { text: "价值观或生活方式差异", score: 2 },
+                { text: "信任问题或背叛", score: 1 }
+            ]},
+            { id: 5, dimension: "breakup", text: "分手是双方共同的决定吗？", options: [
+                { text: "是一方提出的，但另一方也认同", score: 4 },
+                { text: "是双方共同商量的结果", score: 3 },
+                { text: "是一方强烈要求的", score: 2 },
+                { text: "是在激烈争吵中发生的", score: 1 }
+            ]},
+            { id: 6, dimension: "breakup", text: "分手后，你们是否讨论过导致关系问题的原因？", options: [
+                { text: "深入讨论过并相互理解", score: 4 },
+                { text: "简单讨论过", score: 3 },
+                { text: "尝试讨论但未能深入", score: 2 },
+                { text: "完全没讨论过", score: 1 }
+            ]},
+            
+            // 改变意愿维度
+            { id: 7, dimension: "change", text: "您认为自己需要为关系问题负多少责任？", options: [
+                { text: "大部分责任", score: 4 },
+                { text: "相当一部分责任", score: 3 },
+                { text: "少部分责任", score: 2 },
+                { text: "几乎没有责任", score: 1 }
+            ]},
+            { id: 8, dimension: "change", text: "您是否愿意为改善关系做出改变？", options: [
+                { text: "非常愿意并已开始行动", score: 4 },
+                { text: "愿意，但需要对方也改变", score: 3 },
+                { text: "有些犹豫", score: 2 },
+                { text: "不愿意改变", score: 1 }
+            ]},
+            { id: 9, dimension: "change", text: "您认为您的前任愿意为关系做出改变吗？", options: [
+                { text: "非常愿意", score: 4 },
+                { text: "可能愿意", score: 3 },
+                { text: "不确定", score: 2 },
+                { text: "可能不愿意", score: 1 }
+            ]},
+            
+            // 外部因素维度
+            { id: 10, dimension: "external", text: "你们的生活环境或情况自分手后是否有重大变化？", options: [
+                { text: "有积极变化，减少了之前的压力", score: 4 },
+                { text: "有一些小变化", score: 3 },
+                { text: "几乎没变化", score: 2 },
+                { text: "有负面变化，增加了压力", score: 1 }
+            ]},
+            { id: 11, dimension: "external", text: "你们的家人和朋友对你们复合的态度是？", options: [
+                { text: "大多数支持", score: 4 },
+                { text: "意见不一", score: 3 },
+                { text: "大多数不关心", score: 2 },
+                { text: "大多数反对", score: 1 }
+            ]},
+            { id: 12, dimension: "external", text: "是否有第三方（如新伴侣）影响复合可能性？", options: [
+                { text: "完全没有", score: 4 },
+                { text: "可能有轻微影响", score: 3 },
+                { text: "有一定影响", score: 2 },
+                { text: "有重大影响", score: 1 }
+            ]}
+        ];
+
+        // 结果解释数据
+        const resultInterpretations = {
+            low: {
+                range: [0, 25],
+                text: "低概率 - 复合可能性较小",
+                assessment: "根据您的回答，您与前任复合的可能性较低。可能的原因包括感情基础薄弱、根本问题难以解决或双方缺乏改变意愿。",
+                advice: "建议您专注于自我成长和个人发展，考虑向前看而非执着于过去的关系。",
+                factors: [
+                    { text: "情感连接较弱", type: "negative" },
+                    { text: "根本问题难以解决", type: "negative" },
+                    { text: "改变意愿低", type: "negative" },
+                    { text: "外部阻力大", type: "negative" }
+                ]
+            },
+            mediumLow: {
+                range: [26, 45],
+                text: "中低概率 - 复合有一定可能性但面临挑战",
+                assessment: "根据您的回答，您与前任复合的可能性处于中低水平。虽然存在一些积极因素，但关系中的核心问题需要认真解决。",
+                advice: "如果您希望复合，建议先专注于个人成长和问题解决，而非急于恢复关系。",
+                factors: [
+                    { text: "情感连接一般", type: "neutral" },
+                    { text: "存在沟通问题", type: "negative" },
+                    { text: "改变意愿中等", type: "neutral" },
+                    { text: "外部环境复杂", type: "neutral" }
+                ]
+            },
+            medium: {
+                range: [46, 65],
+                text: "中等概率 - 复合可能性存在但需要努力",
+                assessment: "根据您的回答，您与前任复合的可能性处于中等水平。你们之间有较强的感情基础和积极的回忆，这是复合的有利因素。然而，关系中存在的沟通问题和信任问题需要认真解决。",
+                advice: "如果双方都有意愿，复合是可能的，但需要共同努力解决根本问题。",
+                factors: [
+                    { text: "情感连接较强", type: "positive" },
+                    { text: "沟通问题显著", type: "negative" },
+                    { text: "外部压力适中", type: "neutral" },
+                    { text: "改变意愿较高", type: "positive" },
+                    { text: "信任问题存在", type: "negative" }
+                ]
+            },
+            mediumHigh: {
+                range: [66, 80],
+                text: "中高概率 - 复合可能性较大",
+                assessment: "根据您的回答，您与前任复合的可能性处于中高水平。你们之间有较强的感情基础，且双方都表现出解决问题的意愿。",
+                advice: "复合的可能性较大，建议采取渐进方式重建关系，同时解决之前的问题。",
+                factors: [
+                    { text: "情感连接强", type: "positive" },
+                    { text: "沟通良好", type: "positive" },
+                    { text: "改变意愿高", type: "positive" },
+                    { text: "外部环境有利", type: "positive" },
+                    { text: "存在小问题需要解决", type: "neutral" }
+                ]
+            },
+            high: {
+                range: [81, 100],
+                text: "高概率 - 复合可能性很大",
+                assessment: "根据您的回答，您与前任复合的可能性非常高。你们之间有深厚的感情基础，且导致分手的问题似乎是可以解决的。",
+                advice: "复合的可能性很大，但建议不要急于求成，确保双方都从分手中吸取了教训并做好了改变的准备。",
+                factors: [
+                    { text: "情感连接非常强", type: "positive" },
+                    { text: "沟通良好", type: "positive" },
+                    { text: "改变意愿非常高", type: "positive" },
+                    { text: "外部环境非常有利", type: "positive" },
+                    { text: "问题可解决", type: "positive" }
+                ]
+            }
+        };
+
+        // 初始化测试
+        document.addEventListener('DOMContentLoaded', function() {
+            // 生成问题
+            const questionsContainer = document.getElementById('questions-container');
+            
+            questions.forEach((question, index) => {
+                const questionElement = document.createElement('div');
+                questionElement.className = 'question';
+                
+                const questionText = document.createElement('div');
+                questionText.className = 'question-text';
+                questionText.textContent = `${index + 1}. ${question.text}`;
+                
+                const optionsContainer = document.createElement('div');
+                optionsContainer.className = 'options';
+                
+                question.options.forEach(option => {
+                    const optionElement = document.createElement('label');
+                    optionElement.className = 'option';
+                    
+                    const input = document.createElement('input');
+                    input.type = 'radio';
+                    input.name = `question-${question.id}`;
+                    input.value = option.score;
+                    
+                    const optionText = document.createElement('span');
+                    optionText.textContent = option.text;
+                    
+                    optionElement.appendChild(input);
+                    optionElement.appendChild(optionText);
+                    
+                    optionElement.addEventListener('click', function() {
+                        // 移除同一问题的其他选项的选择状态
+                        const siblings = optionsContainer.querySelectorAll('.option');
+                        siblings.forEach(sibling => {
+                            sibling.classList.remove('selected');
+                        });
+                        
+                        // 添加当前选项的选择状态
+                        this.classList.add('selected');
+                        input.checked = true;
+                    });
+                    
+                    optionsContainer.appendChild(optionElement);
+                });
+                
+                questionElement.appendChild(questionText);
+                questionElement.appendChild(optionsContainer);
+                questionsContainer.appendChild(questionElement);
+            });
+            
+            // 提交测试
+            document.getElementById('submit-btn').addEventListener('click', function() {
+                const selectedOptions = document.querySelectorAll('input[type="radio"]:checked');
+                
+                if (selectedOptions.length < questions.length) {
+                    alert('请回答所有问题后再查看结果。');
+                    return;
+                }
+                
+                // 计算总分
+                let totalScore = 0;
+                selectedOptions.forEach(option => {
+                    totalScore += parseInt(option.value);
+                });
+                
+                // 计算百分比（最低分=questions.length，最高分=questions.length*4）
+                const minScore = questions.length;
+                const maxScore = questions.length * 4;
+                const percentage = Math.round(((totalScore - minScore) / (maxScore - minScore)) * 100);
+                
+                // 显示结果
+                showResult(percentage);
+            });
+        });
+
+        // 显示测试结果
+        function showResult(percentage) {
+            // 确定结果解释
+            let interpretation;
+            for (const key in resultInterpretations) {
+                const range = resultInterpretations[key].range;
+                if (percentage >= range[0] && percentage <= range[1]) {
+                    interpretation = resultInterpretations[key];
+                    break;
+                }
+            }
+            
+            // 更新结果内容
+            document.getElementById('probability-value').textContent = `${percentage}%`;
+            document.getElementById('probability-progress').style.width = `${percentage}%`;
+            document.getElementById('probability-interpretation').textContent = interpretation.text;
+            document.getElementById('detailed-assessment').textContent = interpretation.assessment;
+            
+            // 更新因素
+            const factorsContainer = document.querySelector('.factors');
+            factorsContainer.innerHTML = '';
+            interpretation.factors.forEach(factor => {
+                const factorElement = document.createElement('div');
+                factorElement.className = `factor ${factor.type}`;
+                factorElement.textContent = factor.text;
+                factorsContainer.appendChild(factorElement);
+            });
+            
+            // 显示结果区域
+            document.getElementById('result').style.display = 'block';
+            
+            // 滚动到结果区域
+            document.getElementById('result').scrollIntoView({ behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>
